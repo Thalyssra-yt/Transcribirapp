@@ -5,11 +5,11 @@ Reglas: una fase no se empieza hasta cerrar la anterior. Cada fase termina con `
 ---
 
 ## Fase 0 — Cimientos
-- [ ] Monorepo pnpm con `packages/core`, `packages/omr`, `packages/cli`, `apps/web`, `apps/desktop`.
-- [ ] TypeScript estricto compartido (`tsconfig.base.json`), ESLint, Prettier, Vitest.
-- [ ] GitHub Actions: lint + test + build en cada push.
-- [ ] `docs/DECISIONES.md` creado con las decisiones del stack.
-- [ ] `packages/core/test/fixtures/`: al menos 5 MusicXML de prueba (escala en Sib, melodía en Mi mayor con alteraciones, partitura de cuarteto con violonchelo en clave de Fa, partitura con cifrado americano, fragmento orquestal con trompa y clarinete transportados).
+- [x] Monorepo pnpm con `packages/core`, `packages/omr`, `packages/cli`, `apps/web`, `apps/desktop`.
+- [x] TypeScript estricto compartido (`tsconfig.base.json`), ESLint, Prettier, Vitest.
+- [x] GitHub Actions: lint + test + build en cada push.
+- [x] `docs/DECISIONES.md` creado con las decisiones del stack.
+- [x] `packages/core/test/fixtures/`: al menos 5 MusicXML de prueba (escala en Sib, melodía en Mi mayor con alteraciones, partitura de cuarteto con violonchelo en clave de Fa, partitura con cifrado americano, fragmento orquestal con trompa y clarinete transportados).
 
 **Aceptación:** `pnpm install && pnpm lint && pnpm test && pnpm build` funcionan en limpio.
 
