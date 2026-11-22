@@ -7,5 +7,6 @@ Formato breve: fecha · decisión · motivo · alternativas descartadas.
 - **Inicial** · Tauri 2 para escritorio y móvil + PWA para web · Un solo código de UI, binarios pequeños · Descartado: Electron (pesado), React Native (habría que rehacer el render de partituras).
 - **Inicial** · OMR mediante interfaz de proveedores; manuscrito con modelo de visión en la nube + corrección humana · Es lo más preciso hoy para manuscrito · Riesgo: privacidad y coste → consentimiento y clave del usuario.
 - **2026-11-22** · pnpm 12 con `allowBuilds: esbuild: true` en `pnpm-workspace.yaml` · pnpm 12 exige aprobar los scripts de instalación de dependencias y esbuild es necesario para Vitest y Vite · Descartado: `dangerouslyAllowAllBuilds` (ejecutaría todos los scripts sin revisar).
+- **2026-11-22** · `fast-check@4.11.0` como única dependencia de tests por propiedades, con excepción `minimumReleaseAgeExclude` en `pnpm-workspace.yaml` · Permite cubrir ida/vuelta y coherencia semitónica con 200 ejecuciones por propiedad · Descartado: añadir más librerías de propiedad testing o ejecutar las propiedades sin semilla fija.
 
 <!-- Los agentes añaden aquí nuevas decisiones y dudas musicales pendientes. -->

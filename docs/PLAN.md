@@ -14,15 +14,15 @@ Reglas: una fase no se empieza hasta cerrar la anterior. Cada fase termina con `
 **Aceptación:** `pnpm install && pnpm lint && pnpm test && pnpm build` funcionan en limpio.
 
 ## Fase 1 — Motor musical (`packages/core`)
-- [ ] `pitch.ts`: Nota, quintas, diatónico, midi, `deQuintas`, nombres en español ("Sib4") e inglés ("Bb4").
-- [ ] `interval.ts`: intervalos, desde/hacia `<transpose>` de MusicXML, inverso, suma.
-- [ ] `instruments.ts`: catálogo completo de `TRANSPOSICION.md §2` como datos tipados.
-- [ ] `transpose.ts`: nota (§4.3), armadura (§4.4), enarmonía (§4.5), alteraciones imposibles (§4.6), cifrado.
-- [ ] `range.ts`: comprobación de registro y propuesta de octava (§7).
-- [ ] Tests 1–22 de `TRANSPOSICION.md §8` como tabla (`it.each`).
-- [ ] Tests por propiedades (fast-check): para cualquier nota e instrumento, ida y vuelta = identidad; semitonos siempre coherentes.
+- [x] `pitch.ts`: Nota, quintas, diatónico, midi, `deQuintas`, nombres en español ("Sib4") e inglés ("Bb4").
+- [x] `interval.ts`: intervalos, desde/hacia `<transpose>` de MusicXML, inverso, suma.
+- [x] `instruments.ts`: catálogo completo de `TRANSPOSICION.md §2` como datos tipados.
+- [x] `transpose.ts`: nota (§4.3), armadura (§4.4), enarmonía (§4.5), alteraciones imposibles (§4.6), cifrado.
+- [x] `range.ts`: comprobación de registro y propuesta de octava (§7).
+- [x] Tests 1–22 de `TRANSPOSICION.md §8` como tabla (`it.each`).
+- [x] Tests por propiedades (fast-check): para cualquier nota e instrumento, ida y vuelta = identidad; semitonos siempre coherentes.
 
-**Aceptación:** todos los tests en verde; `@musico` revisa y aprueba.
+**Aceptación:** todos los tests en verde; `@musico` revisa y aprueba. Aprobado el 2026-11-22 tras corregir cifrado con armadura, clave de trompa, rangos de clarinete/piano/voz tenor y enarmonía de ida y vuelta; `@revisor` confirma lint, typecheck, tests y build en verde.
 
 ## Fase 2 — MusicXML
 - [ ] Lector/escritor que **conserva** todo lo que no toca (no reconstruir el documento desde cero: modificar el DOM).
