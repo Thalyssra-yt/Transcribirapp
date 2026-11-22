@@ -31,6 +31,9 @@ Reglas: una fase no se empieza hasta cerrar la anterior. Cada fase termina con `
 - [ ] Transponer partitura completa: notas, armaduras (incluidos cambios a mitad), claves, `<transpose>`, cifrado, nombres de instrumento, recálculo de `<accidental>` (§4.7).
 - [ ] Detección partitura en Do / transportada por parte (§6).
 - [ ] Extraer una o varias partes / un pentagrama del piano.
+- [ ] Identificar el instrumento de cada parte por `<part-name>`/abreviatura con `buscarInstrumento` y por su `<transpose>`; si hay duda, preguntar.
+- [ ] Partes para instrumentos `sinArmadura` (trompas/trompetas naturales): sin armadura y con alteraciones accidentales (TRANSPOSICION.md §2.5).
+- [ ] Cambio de tonalidad (`cambioTonalidad`) aplicado a toda la partitura, incluidos cambios de armadura a mitad de obra.
 - [ ] Tests 23–24 (ida y vuelta) sobre todos los fixtures; los MusicXML resultantes se abren sin errores en MuseScore (prueba manual documentada).
 
 **Aceptación:** golden files en `test/golden/` revisados por `@musico`.
@@ -51,12 +54,14 @@ Pantallas:
 1. **Inicio**: zona grande "Abrir partitura" (arrastrar, elegir archivo, **hacer foto** en móvil, PDF) + recientes.
 2. **Revisión** (solo si viene de imagen): editor de corrección de `OMR.md §4`.
 3. **Transcribir** (pantalla principal):
-   - Barra superior: `De: [Concierto ▾]` ⇄ `A: [Saxo tenor en Sib ▾]` (botón para invertir), selector de parte(s), `Octava −/+`.
+   - Barra superior: `De: [Concierto ▾]` ⇄ `A: [Saxo tenor en Sib ▾]` (botón para invertir), `Tonalidad: [Mantener ▾ / cualquiera de las 15]` con dirección (más cercana / arriba / abajo), selector de parte(s), `Octava −/+`.
+   - Los selectores de instrumento muestran **todo el catálogo** (`INSTRUMENTOS`), agrupado por **agrupación** (Banda, Orquesta, Brass band, Big band, Cámara, Coro, Histórico) y por **familia**, con buscador (`buscarInstrumento`, sin tildes, acepta abreviaturas y alias) y la afinación visible ("Clarinete — Sib"). Favoritos arriba.
+   - "Transcribir para toda la plantilla": elegir una plantilla (`PLANTILLAS`) y generar de una vez las partes de todos sus instrumentos, con avisos de registro por parte.
    - Vista dividida original ↔ resultado (OSMD); en móvil, pestañas.
    - Panel de avisos: notas fuera de registro (clic → salta a la nota), cambios enarmónicos aplicados.
    - Reproducir / parar, tempo.
    - Exportar: MusicXML, PDF, PNG/SVG, MIDI; compartir (Web Share API / hoja de compartir nativa).
-4. **Ajustes**: mi instrumento por defecto (se preselecciona en "A:"), registro personalizado, preferencia sostenidos/bemoles para ±6, proveedor OMR y clave API, idioma, tema, tamaño de partitura.
+4. **Ajustes**: mi instrumento por defecto (se preselecciona en "A:"), **instrumentos personalizados** (nombre + "lee Do, suena…" + clave + registro; `definirInstrumento`), registro personalizado, preferencia sostenidos/bemoles para ±6, proveedor OMR y clave API, idioma, tema, tamaño de partitura.
 
 Técnico:
 - [ ] Zustand para el estado; la transposición se ejecuta en un Web Worker para no bloquear.
@@ -92,5 +97,4 @@ Técnico:
 ## Ideas para después (no hacer sin pedirlo)
 - Reconocer partituras desde audio.
 - Biblioteca en la nube y sincronización.
-- Transponer a otra tonalidad (no solo a otro instrumento) — *fácil de añadir porque usa el mismo motor*.
 - Modo práctica: seguir la partitura con el micrófono.

@@ -55,7 +55,9 @@ export function proponerOctava(notas: Nota[], instrumento: Instrumento): number 
     );
     const fueraAbsoluto = informes.filter((informe) => informe.estado === 'fuera-absoluto').length;
     const fueraComodo = informes.filter((informe) => informe.estado !== 'comodo').length;
-    const puntuacion = [fueraAbsoluto, fueraComodo, Math.abs(desplazamiento), desplazamiento];
+    // Prioridad: 1) menos notas imposibles, 2) moverse lo menos posible del original,
+    // 3) menos notas incómodas, 4) en empate, preferir bajar. Ver TRANSPOSICION.md §7.
+    const puntuacion = [fueraAbsoluto, Math.abs(desplazamiento), fueraComodo, desplazamiento];
 
     if (mejorPuntuacion === null || esMenor(puntuacion, mejorPuntuacion)) {
       mejorPuntuacion = puntuacion;

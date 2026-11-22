@@ -1,6 +1,7 @@
 import {
   SEGUNDA_DISMINUIDA_ASCENDENTE,
   SEGUNDA_DISMINUIDA_DESCENDENTE,
+  intervaloEntreNotas,
   invertirIntervalo,
   intervaloDesdeTranspose,
   sumarIntervalos,
@@ -20,7 +21,16 @@ import {
   type Paso
 } from './pitch';
 
-export type DestinoTransposicion = InstrumentoId | 'concierto';
+/** Un instrumento del catálogo, uno personalizado (objeto) o el sonido real. */
+export type DestinoTransposicion = InstrumentoId | 'concierto' | Instrumento;
+export type DireccionCambio = 'arriba' | 'abajo' | 'cercana';
+
+export interface CambioTonalidad {
+  /** Armadura de concierto a la que se quiere llevar la obra (−7…+7). */
+  armadura: number;
+  /** Hacia dónde mover la música. Por defecto, la tonalidad más cercana. */
+  direccion?: DireccionCambio;
+}
 export type PreferenciaEnarmonia = 'sostenidos' | 'bemoles';
 
 export interface OpcionesTransposicion {
@@ -28,6 +38,8 @@ export interface OpcionesTransposicion {
   hasta: DestinoTransposicion;
   armaduraOrigen?: number;
   preferir?: PreferenciaEnarmonia;
+  /** Cambiar además de tonalidad (p. ej. de Fa mayor a Sol mayor de concierto). */
+  cambioTonalidad?: CambioTonalidad;
 }
 
 export interface ResultadoTransposicion {
@@ -69,35 +81,85 @@ export function transponerNota(notaBase: Nota, intervalo: Intervalo): Nota {
   return aplicarIntervalo(notaBase, intervalo);
 }
 
-export function intervaloSonido(instrumento: Instrumento): Intervalo {
-  const { diatonic, chromatic, octaveChange } = instrumento.transpose;
+const CACHE_SONIDO = new WeakMap<Instrumento, Intervalo>();
 
-  return intervaloDesdeTranspose(diatonic, chromatic, octaveChange);
+export function intervaloSonido(instrumento: Instrumento): Intervalo {
+  const enCache = CACHE_SONIDO.get(instrumento);
+  if (enCache) {
+    return enCache;
+  }
+
+  const { diatonic, chromatic, octaveChange } = instrumento.transpose;
+  const intervalo = intervaloDesdeTranspose(diatonic, chromatic, octaveChange);
+  CACHE_SONIDO.set(instrumento, intervalo);
+
+  return intervalo;
 }
 
 export function intervaloEscritura(instrumento: Instrumento): Intervalo {
   return invertirIntervalo(intervaloSonido(instrumento));
 }
 
+function resolver(destino: Exclude<DestinoTransposicion, 'concierto'>): Instrumento {
+  return typeof destino === 'string' ? instrumentoPorId(destino) : destino;
+}
+
 export function intervaloEntreInstrumentos(
   desde: DestinoTransposicion,
   hasta: DestinoTransposicion
 ): Intervalo {
-  const origen = desde === 'concierto' ? UNISONO : intervaloSonido(instrumentoPorId(desde));
-  const destino = hasta === 'concierto' ? UNISONO : intervaloEscritura(instrumentoPorId(hasta));
+  const origen = desde === 'concierto' ? UNISONO : intervaloSonido(resolver(desde));
+  const destino = hasta === 'concierto' ? UNISONO : intervaloEscritura(resolver(hasta));
 
   return sumarIntervalos(origen, destino);
 }
 
-export function armaduraConciertoDesdeEscrita(id: InstrumentoId, armaduraEscrita: number): number {
-  return armaduraEscrita + intervaloSonido(instrumentoPorId(id)).quintas;
+export function armaduraConciertoDesdeEscrita(
+  instrumento: Exclude<DestinoTransposicion, 'concierto'>,
+  armaduraEscrita: number
+): number {
+  return armaduraEscrita + intervaloSonido(resolver(instrumento)).quintas;
 }
 
 export function armaduraEscritaDesdeConcierto(
-  id: InstrumentoId,
+  instrumento: Exclude<DestinoTransposicion, 'concierto'>,
   armaduraConcierto: number
 ): number {
-  return armaduraConcierto + intervaloEscritura(instrumentoPorId(id)).quintas;
+  return armaduraConcierto + intervaloEscritura(resolver(instrumento)).quintas;
+}
+
+/**
+ * Intervalo para pasar de una tonalidad a otra (vale igual para mayor y menor,
+ * porque la armadura relativa se mueve lo mismo). "cercana" elige el camino más corto;
+ * en caso de tritono, sube.
+ */
+export function intervaloEntreTonalidades(
+  armaduraOrigen: number,
+  armaduraDestino: number,
+  direccion: DireccionCambio = 'cercana'
+): Intervalo {
+  const tonicaOrigen = { ...deQuintas(armaduraOrigen), octava: 4 };
+  const tonicaDestino = { ...deQuintas(armaduraDestino), octava: 4 };
+  const subiendo = { ...tonicaDestino };
+  const bajando = { ...tonicaDestino };
+
+  const esMasGrave = (a: Nota, b: Nota) =>
+    diatonico(a) < diatonico(b) || (diatonico(a) === diatonico(b) && midi(a) < midi(b));
+
+  while (esMasGrave(subiendo, tonicaOrigen)) {
+    subiendo.octava += 1;
+  }
+  while (esMasGrave(tonicaOrigen, bajando)) {
+    bajando.octava -= 1;
+  }
+
+  const arriba = intervaloEntreNotas(tonicaOrigen, subiendo);
+  const abajo = intervaloEntreNotas(tonicaOrigen, bajando);
+
+  if (direccion === 'arriba') return arriba;
+  if (direccion === 'abajo') return abajo;
+
+  return Math.abs(abajo.semitonos) < Math.abs(arriba.semitonos) ? abajo : arriba;
 }
 
 interface NormalizacionArmadura {
@@ -166,26 +228,53 @@ export function transponerNotaConArmadura(
   return { nota: correccion.nota, armadura: normalizacion.armadura, avisos };
 }
 
-function calcularArmaduraDestino(opciones: OpcionesTransposicion): number {
+interface Plan {
+  intervalo: Intervalo;
+  armaduraDestino: number;
+}
+
+/** Calcula el intervalo total y la armadura escrita de destino: origen → concierto (→ nueva tonalidad) → destino. */
+export function planificarTransposicion(opciones: OpcionesTransposicion): Plan {
   const armaduraOrigen = opciones.armaduraOrigen ?? 0;
   const armaduraConcierto =
     opciones.desde === 'concierto'
       ? armaduraOrigen
       : armaduraConciertoDesdeEscrita(opciones.desde, armaduraOrigen);
 
-  return opciones.hasta === 'concierto'
-    ? armaduraConcierto
-    : armaduraEscritaDesdeConcierto(opciones.hasta, armaduraConcierto);
+  const cambio = opciones.cambioTonalidad
+    ? intervaloEntreTonalidades(
+        armaduraConcierto,
+        opciones.cambioTonalidad.armadura,
+        opciones.cambioTonalidad.direccion
+      )
+    : UNISONO;
+  const armaduraConciertoFinal = armaduraConcierto + cambio.quintas;
+
+  const desdeConcierto: DestinoTransposicion = 'concierto';
+  const intervalo = sumarIntervalos(
+    sumarIntervalos(intervaloEntreInstrumentos(opciones.desde, desdeConcierto), cambio),
+    intervaloEntreInstrumentos(desdeConcierto, opciones.hasta)
+  );
+
+  return {
+    intervalo,
+    armaduraDestino:
+      opciones.hasta === 'concierto'
+        ? armaduraConciertoFinal
+        : armaduraEscritaDesdeConcierto(opciones.hasta, armaduraConciertoFinal)
+  };
 }
 
 export function transponer(
   notaBase: Nota,
   opciones: OpcionesTransposicion
 ): ResultadoTransposicion {
+  const plan = planificarTransposicion(opciones);
+
   return transponerNotaConArmadura(
     notaBase,
-    intervaloEntreInstrumentos(opciones.desde, opciones.hasta),
-    calcularArmaduraDestino(opciones),
+    plan.intervalo,
+    plan.armaduraDestino,
     opciones.preferir
   );
 }
@@ -242,14 +331,37 @@ function transponerRaiz(
   return formatearRaiz(resultado.paso, resultado.alter);
 }
 
+const SIN_ACORDE = /^(N\.?C\.?|%|-)$/i;
+const RAIZ_CIFRADO = /^([A-Ga-g])(#{1,2}|b{1,2})?$/;
+
+function normalizarSimbolos(texto: string): string {
+  return texto.replace(/♯/g, '#').replace(/♭/g, 'b').replace(/𝄪/g, '##').replace(/𝄫/g, 'bb');
+}
+
+/**
+ * Transpone un cifrado americano ("Bb7", "F#m7b5/E", "C6/9", "N.C.").
+ * Solo se considera bajo lo que va tras "/" si es una nota: "C6/9" no tiene bajo.
+ */
 export function transponerCifrado(
   cifrado: string,
   intervalo: Intervalo,
   armaduraDestino?: number,
   preferir?: PreferenciaEnarmonia
 ): string {
-  const [acorde, ...bajo] = cifrado.split('/');
-  const coincidencia = /^([A-Ga-g])(#{1,2}|b{1,2})?(.*)$/.exec(acorde.trim());
+  const limpio = normalizarSimbolos(cifrado.trim());
+
+  if (SIN_ACORDE.test(limpio)) {
+    return cifrado.trim();
+  }
+
+  const partes = limpio.split('/');
+  const bajos: string[] = [];
+  while (partes.length > 1 && RAIZ_CIFRADO.test(partes[partes.length - 1].trim())) {
+    bajos.unshift(partes.pop()!.trim());
+  }
+
+  const acorde = partes.join('/');
+  const coincidencia = /^([A-Ga-g])(#{1,2}|b{1,2})?(.*)$/.exec(acorde);
 
   if (!coincidencia) {
     throw new Error(`No se puede interpretar el cifrado "${cifrado}"`);
@@ -258,23 +370,20 @@ export function transponerCifrado(
   const raiz = `${coincidencia[1]}${coincidencia[2] ?? ''}`;
   const calidad = coincidencia[3];
   const nuevaRaiz = transponerRaiz(raiz, intervalo, armaduraDestino, preferir);
-  const nuevasBajos = bajo.map((parte) =>
+  const nuevosBajos = bajos.map((parte) =>
     transponerRaiz(parte, intervalo, armaduraDestino, preferir)
   );
 
-  return `${nuevaRaiz}${calidad}${nuevasBajos.length > 0 ? `/${nuevasBajos.join('/')}` : ''}`;
+  return `${nuevaRaiz}${calidad}${nuevosBajos.length > 0 ? `/${nuevosBajos.join('/')}` : ''}`;
 }
 
 export function transponerCifradoConOpciones(
   cifrado: string,
   opciones: OpcionesTransposicion
 ): string {
-  return transponerCifrado(
-    cifrado,
-    intervaloEntreInstrumentos(opciones.desde, opciones.hasta),
-    calcularArmaduraDestino(opciones),
-    opciones.preferir
-  );
+  const plan = planificarTransposicion(opciones);
+
+  return transponerCifrado(cifrado, plan.intervalo, plan.armaduraDestino, opciones.preferir);
 }
 
 export function transponerEvento(

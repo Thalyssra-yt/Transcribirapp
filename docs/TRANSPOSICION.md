@@ -77,11 +77,29 @@ Columnas:
 | `voz-tenor` | Voz tenor | Sol con 8 abajo | 8.ª arriba | 0 / 0 / −1 | 0 | Do3 – La4 sonando |
 | `glockenspiel` | Glockenspiel / lira | Sol | 2 octavas abajo | 0 / 0 / +2 | 0 | Sol3 – Do6 |
 
-Los registros son **prácticos y orientativos** (aficionado–intermedio). Guárdalos en `packages/core/src/instruments.ts` con dos niveles: `rangoCómodo` y `rangoAbsoluto`. El usuario podrá ajustarlos en Ajustes (p. ej. un saxofonista con altísimo).
+Los registros son **prácticos y orientativos** (aficionado–intermedio). La tabla da el rango absoluto; el rango cómodo, más estrecho, está en `packages/core/src/instruments.ts`. Fuera del absoluto la nota **no se puede tocar** (p. ej. La3 escrito en saxo tenor). Guárdalos en `packages/core/src/instruments.ts` con dos niveles: `rangoCómodo` y `rangoAbsoluto`. El usuario podrá ajustarlos en Ajustes (p. ej. un saxofonista con altísimo).
 
 El catálogo debe ser **datos, no código**: un array tipado al que se pueda añadir un instrumento sin tocar la lógica.
 
 ---
+
+### 2.4 Catálogo completo en el código (fuente de verdad)
+
+Las tablas anteriores son un resumen. El catálogo real está en `packages/core/src/instruments.ts` y cubre **orquesta sinfónica y clásica, banda de música, brass band, big band, cámara y coro**: unos 75 instrumentos. El saxo tenor es solo el instrumento **por defecto**; la app trabaja con cualquiera.
+
+- Cada instrumento se define por **lo que suena al leer un Do4** (`suena`). Ej.: trompa en Re → `Re3`; saxo bajo → `Sib1`; bajo en Mib de brass band → `Mib1`. El `<transpose>` y la Δquintas se calculan solos, así no pueden contradecirse.
+- Incluye **trompas** en Do alto, Sib alto, La, Lab, Sol, Fa, Mi, Mib, Re, Do basso y Sib basso, y **trompetas** en Do, Re, Mib, Mi, Fa, Sol, La, Sib y piccolo (Sib/La), imprescindibles para partituras clásicas y románticas.
+- Cada instrumento tiene `familia`, `agrupaciones`, `afinacion` ("Sib", "Mib"…), `abreviatura` y `alias` (nombres con que aparece en partituras: "Requinto", "Eufonio", "Cor anglais"…). `buscarInstrumento()` los encuentra sin tildes; se usa en la UI y para identificar pentagramas en el OMR.
+- `PLANTILLAS`: orden de partitura de banda de música, orquesta sinfónica, orquesta clásica, brass band, big band, quintetos, cuartetos y coro.
+- **Instrumentos personalizados**: `definirInstrumento({... suena: 'Si2' ...})` + `registrarInstrumento()` para cualquier afinación rara (p. ej. "trompa en Si basso") o para el registro propio de un músico.
+
+Invariante comprobada en tests: **un instrumento "en X" lee en Do mayor una obra en X mayor de concierto** (trompa en Re → Re mayor se escribe en Do mayor).
+
+### 2.5 Notación histórica (avisos para Fase 2 y OMR)
+
+- Trompas y trompetas naturales (`sinArmadura: true`) se escriben **sin armadura**, con las alteraciones sueltas. Al leer: la tonalidad hay que deducirla del contexto. Al escribir una parte para ellas: sin armadura y alteraciones accidentales.
+- **Trompa en clave de Fa, notación antigua**: muchas ediciones antiguas escriben la trompa en clave de Fa una octava más grave de lo que suena según la regla moderna. Si una parte de trompa en clave de Fa queda una octava fuera de registro, preguntar al usuario.
+- Clarinetes en Do/La/Sib en la misma obra, timbales sin armadura y "Tutti" o "a2" en partes compartidas son habituales en partituras de orquesta.
 
 ## 3. Atajos que todo músico conoce (sirven de comprobación)
 
@@ -93,6 +111,18 @@ El catálogo debe ser **datos, no código**: un array tipado al que se pueda añ
 Ejemplo: tema en Sib mayor (concierto) → saxo tenor lo lee en **Do mayor**; saxo alto en **Sol mayor**; trompa en **Fa mayor**.
 
 ---
+
+## 3 bis. Cambio de tonalidad
+
+Además de cambiar de instrumento, la app puede llevar la obra a **cualquier tonalidad** (p. ej. de Fa mayor a Sol mayor de concierto, para que encaje con un cantante o con otro instrumento):
+
+```
+origen escrito → concierto → cambio de tonalidad → escrito del destino
+```
+
+- `intervaloEntreTonalidades(armaduraOrigen, armaduraDestino, 'cercana' | 'arriba' | 'abajo')`: el intervalo entre las tónicas (vale para mayor y menor). `cercana` elige el camino más corto (en el tritono, sube).
+- En `transponer(...)` se pasa como `cambioTonalidad: { armadura, direccion }`; la armadura escrita del destino y el cifrado se recalculan solos.
+- Ejemplo comprobado: obra en Fa mayor tocada en Sol mayor por un saxo tenor → se escribe en La mayor; "C7" de concierto → "E7".
 
 ## 4. Algoritmo correcto (con enarmonía bien escrita)
 
@@ -217,7 +247,7 @@ Tras transponer, **recalcula** los `<accidental>` de cada compás:
 ## 7. Registro y cambio de octava
 
 - Comprobar cada nota **escrita** contra `rangoAbsoluto` (error) y `rangoCómodo` (aviso) del instrumento destino.
-- Si hay notas fuera, proponer un desplazamiento de octava para **toda la parte** (o para un fragmento seleccionado): probar −2…+2 octavas y elegir el que deje menos notas fuera; en empate, el que más notas deje en el rango cómodo; en empate, el más cercano a 0.
+- Si hay notas fuera, proponer un desplazamiento de octava para **toda la parte** (o para un fragmento seleccionado): probar −2…+2 octavas y ordenar por: 1) menos notas **imposibles** (fuera del rango absoluto); 2) **moverse lo menos posible** del original; 3) menos notas incómodas; 4) en empate, bajar. Así una melodía que cabe entera no se baja una octava solo porque una nota quede algo aguda.
 - La app **muestra** las notas conflictivas (resaltadas) y **propone**, no aplica sin permiso.
 - Ejemplo: melodía de flauta con Do6 de concierto → saxo tenor escrito Re7 → fuera de registro → propuesta: bajar 8.ª (Re6), o bajar dos octavas si casi todo queda alto.
 

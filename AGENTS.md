@@ -10,7 +10,7 @@ Una aplicación **multiplataforma** (web/PWA, Windows, macOS, Linux, Android, iO
 1. **Importa partituras**: MusicXML (`.musicxml`, `.xml`), MusicXML comprimido (`.mxl`), ABC (`.abc`), y **imágenes/PDF** de partituras impresas o **manuscritas a mano**.
 2. **Reconoce** las imágenes (OMR = Optical Music Recognition) y las convierte a MusicXML.
 3. **Extrae partes** de una partitura de orquesta/banda (elegir una voz o pentagrama).
-4. **Transpone** de un instrumento a otro respetando la teoría musical: de sonido real (concierto, en Do) a instrumento transpositor, de transpositor a Do, o entre transpositores (p. ej. trompeta en Sib → saxo alto en Mib).
+4. **Transpone** a cualquier tonalidad y entre cualquier instrumento de orquesta, banda de música, brass band, big band, cámara o coro (catálogo completo en `packages/core/src/instruments.ts`; el saxo tenor es solo el instrumento por defecto), siempre respetando la teoría musical: de sonido real (concierto, en Do) a instrumento transpositor, de transpositor a Do, o entre transpositores (p. ej. trompeta en Sib → saxo alto en Mib).
 5. **Avisa** cuando una nota queda fuera del registro del instrumento destino y **propone** cambio de octava.
 6. **Muestra** la partitura resultante, permite **corregir** notas mal reconocidas, **reproducirla** y **exportarla** (MusicXML, PDF, PNG/SVG, MIDI).
 
