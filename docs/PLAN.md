@@ -46,7 +46,7 @@ Reglas: una fase no se empieza hasta cerrar la anterior. Cada fase termina con `
 - [x] Salida legible y `--json` para que la use el agente `transcriptor`.
 - [x] `pnpm partitura` desde la raíz, `--help`/`-h` general y por comando, `--version`, búsqueda y filtros de instrumentos, sugerencias de ids y protección de sobrescritura con `--forzar`.
 
-**Aceptación:** los cuatro comandos funcionan con `.musicxml`, `.mxl` y `.abc` de entrada, y escriben `.musicxml` o `.mxl`; 209 tests, lint, typecheck y build en verde. El bin `partitura` también funciona con `node dist/index.js` tras el build, y las rutas relativas se resuelven desde la raíz del proyecto.
+**Aceptación:** los cuatro comandos funcionan con `.musicxml`, `.mxl` y `.abc` de entrada, y escriben `.musicxml` o `.mxl`; los 209 tests de Fase 3, más los añadidos en fases posteriores, lint, typecheck y build en verde. El bin `partitura` también funciona con `node dist/index.js` tras el build, y las rutas relativas se resuelven desde la raíz del proyecto.
 
 ## Fase 4 — Interfaz web (`apps/web`)
 Diseño:
@@ -67,12 +67,19 @@ Pantallas:
 4. **Ajustes**: mi instrumento por defecto (se preselecciona en "A:"), **instrumentos personalizados** (nombre + "lee Do, suena…" + clave + registro; `definirInstrumento`), registro personalizado, preferencia sostenidos/bemoles para ±6, proveedor OMR y clave API, idioma, tema, tamaño de partitura.
 
 Técnico:
-- [ ] Zustand para el estado; la transposición se ejecuta en un Web Worker para no bloquear.
+- [x] Primer corte de **Transcribir**: importar `.musicxml`, `.xml`, `.mxl` y `.abc`, elegir origen/destino/tonalidad/dirección/enarmonía/octava/partes, transponer, ver original y resultado con OSMD (pestañas en móvil), mostrar avisos y exportar MusicXML/MXL.
+- [x] Rediseño según revisión externa: transcripción automática con debounce, barra superior con "Más opciones", selector con búsqueda y favoritos, resumen visible en móvil, hoja de opciones, banner de avisos con salto al compás, colorido rojo en OSMD, nombres de instrumentos en las partes, dudas como preguntas y pie con `Motor {VERSION}`.
+- [x] Pasarela Playwright escritorio/móvil en `apps/web/e2e`: apertura, transcripción, avisos, exportación, foco de teclado, pestañas móviles y axe en claro/oscuro. Ejecutada en local y preparada en CI.
+- [x] La transposición se ejecuta en un Web Worker con fallback síncrono; el resultado que cruza el worker es serializable.
+- [x] Auditoría axe integrada en el flujo E2E; sin violaciones en claro y oscuro, incluido el diálogo de opciones móvil.
+- [x] Correcciones de la revisión final: "Bajar una octava" baja exactamente una; la hoja móvil es un diálogo con foco, Escape e `inert`; el resaltado OSMD usa la octava MusicXML; el combobox hace scroll a la opción activa.
+- [ ] Zustand para el estado (por decidir: el flujo actual usa estado local de React).
 - [ ] Persistencia local de proyectos (IndexedDB).
 - [ ] PWA instalable y funcionando sin conexión.
 - [ ] Atajos de teclado documentados en un diálogo `?`.
+- [ ] Pendiente del plan original aún no implementado: foto/PDF en inicio, recientes, plantillas, reproducción/tempo, exportación PDF/PNG/SVG/MIDI, compartir y pantalla de ajustes.
 
-**Aceptación:** flujo completo con un MusicXML: abrir → elegir saxo tenor → ver → avisos → exportar, en escritorio y móvil (Playwright con viewport móvil), sin errores graves de axe.
+**Aceptación verificada:** flujo completo con un MusicXML: abrir → elegir saxo tenor → ver → avisos → exportar, en escritorio y móvil (Playwright con viewport móvil), sin violaciones de axe. Verificación del 2026-11-23 tras la segunda revisión externa: `pnpm lint`, `pnpm typecheck`, `pnpm test` (223 tests), E2E (11 passed, 3 skipped) y `pnpm build` en verde. Corregidos el intercambio con instrumento detectado, el ajuste de OSMD al ancho real, la barra móvil, los nombres de tonalidades, los nombres accesibles, el estado del aviso y los iconos/manifest. `@musico` aprobó la Fase 4 el 2026-11-23 tras revisar octava, armadura/modo, avisos de registro, resaltado OSMD con la octava MusicXML correcta y exportación; sin observaciones musicales pendientes. Fase 4 sigue abierta mientras queden elementos pendientes del plan original.
 
 ## Fase 5 — Reconocimiento de imágenes
 - [ ] Preprocesado en Worker (`OMR.md §2`).

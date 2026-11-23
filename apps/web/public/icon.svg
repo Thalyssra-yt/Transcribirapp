@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Transcriptor de partituras">
+  <rect width="512" height="512" rx="96" fill="#0d1117"/>
+  <ellipse cx="178" cy="366" rx="86" ry="60" transform="rotate(-20 178 366)" fill="#58a6ff"/>
+  <rect x="250" y="104" width="30" height="264" rx="6" fill="#f0f6fc"/>
+  <path d="M280 104c74 14 116 58 108 132-18-42-54-70-108-80z" fill="#58a6ff"/>
+</svg>

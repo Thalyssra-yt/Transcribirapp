@@ -187,6 +187,17 @@ function armaduraInicial(parte: MusicXmlElement): number {
   return 0;
 }
 
+function modoInicial(parte: MusicXmlElement): 'major' | 'minor' {
+  for (const atributos of Array.from(parte.getElementsByTagName('attributes'))) {
+    const modo = atributos.getElementsByTagName('mode')[0]?.textContent?.trim().toLowerCase();
+    if (modo === 'minor' || modo === 'major') {
+      return modo;
+    }
+  }
+
+  return 'major';
+}
+
 function alterDeArmadura(armadura: number, paso: Paso): number {
   if (armadura > 0) {
     return SOSTENIDOS.slice(0, armadura).includes(paso) ? 1 : 0;
@@ -721,6 +732,7 @@ export function transponerPartitura(
       desde: origen,
       hasta: opciones.hasta,
       armaduraOrigen: armaduraBase,
+      modoOrigen: modoInicial(parte),
       cambioTonalidad: opciones.cambioTonalidad,
       preferir: opciones.preferir
     });

@@ -24,6 +24,7 @@ import {
 /** Un instrumento del catálogo, uno personalizado (objeto) o el sonido real. */
 export type DestinoTransposicion = InstrumentoId | 'concierto' | Instrumento;
 export type DireccionCambio = 'arriba' | 'abajo' | 'cercana';
+export type Modo = 'major' | 'minor';
 
 export interface CambioTonalidad {
   /** Armadura de concierto a la que se quiere llevar la obra (−7…+7). */
@@ -31,7 +32,7 @@ export interface CambioTonalidad {
   /** Hacia dónde mover la música. Por defecto, la tonalidad más cercana. */
   direccion?: DireccionCambio;
   /** Modo que debe quedar escrito en la partitura, si se conoce. */
-  modo?: 'major' | 'minor';
+  modo?: Modo;
 }
 export type PreferenciaEnarmonia = 'sostenidos' | 'bemoles';
 
@@ -39,6 +40,7 @@ export interface OpcionesTransposicion {
   desde: DestinoTransposicion;
   hasta: DestinoTransposicion;
   armaduraOrigen?: number;
+  modoOrigen?: Modo;
   preferir?: PreferenciaEnarmonia;
   /** Cambiar además de tonalidad (p. ej. de Fa mayor a Sol mayor de concierto). */
   cambioTonalidad?: CambioTonalidad;
@@ -131,17 +133,24 @@ export function armaduraEscritaDesdeConcierto(
 }
 
 /**
- * Intervalo para pasar de una tonalidad a otra (vale igual para mayor y menor,
- * porque la armadura relativa se mueve lo mismo). "cercana" elige el camino más corto;
- * en caso de tritono, sube.
+ * Intervalo entre las tónicas reales de dos tonalidades. "cercana" elige el camino
+ * más corto; en caso de tritono, sube.
  */
 export function intervaloEntreTonalidades(
   armaduraOrigen: number,
   armaduraDestino: number,
-  direccion: DireccionCambio = 'cercana'
+  direccion: DireccionCambio = 'cercana',
+  modoOrigen: Modo = 'major',
+  modoDestino: Modo = 'major'
 ): Intervalo {
-  const tonicaOrigen = { ...deQuintas(armaduraOrigen), octava: 4 };
-  const tonicaDestino = { ...deQuintas(armaduraDestino), octava: 4 };
+  const tonicaOrigen = {
+    ...deQuintas(armaduraOrigen + (modoOrigen === 'minor' ? 3 : 0)),
+    octava: 4
+  };
+  const tonicaDestino = {
+    ...deQuintas(armaduraDestino + (modoDestino === 'minor' ? 3 : 0)),
+    octava: 4
+  };
   const subiendo = { ...tonicaDestino };
   const bajando = { ...tonicaDestino };
 
@@ -247,10 +256,12 @@ export function planificarTransposicion(opciones: OpcionesTransposicion): Plan {
     ? intervaloEntreTonalidades(
         armaduraConcierto,
         opciones.cambioTonalidad.armadura,
-        opciones.cambioTonalidad.direccion
+        opciones.cambioTonalidad.direccion,
+        opciones.modoOrigen,
+        opciones.cambioTonalidad.modo
       )
     : UNISONO;
-  const armaduraConciertoFinal = armaduraConcierto + cambio.quintas;
+  const armaduraConciertoFinal = opciones.cambioTonalidad?.armadura ?? armaduraConcierto;
 
   const desdeConcierto: DestinoTransposicion = 'concierto';
   const intervalo = sumarIntervalos(

@@ -1,6 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
+import { LimiteError } from './components/LimiteError';
 import './styles.css';
 
 const contenedor = document.getElementById('root');
@@ -11,6 +12,8 @@ if (!contenedor) {
 
 createRoot(contenedor).render(
   <StrictMode>
-    <App />
+    <LimiteError>
+      <App />
+    </LimiteError>
   </StrictMode>
 );

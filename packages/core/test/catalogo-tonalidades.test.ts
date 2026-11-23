@@ -191,6 +191,28 @@ describe('cambio de tonalidad', () => {
     expect(formatearNota(r.nota)).toBe(esperada);
   });
 
+  it('respeta la tónica real al cambiar entre modos', () => {
+    expect(intervaloEntreTonalidades(-2, -1, 'cercana', 'major', 'minor').quintas).toBe(4);
+
+    const deSibMayorAReMenor = transponer(parseNota('Sib4'), {
+      desde: 'concierto',
+      hasta: 'concierto',
+      armaduraOrigen: -2,
+      modoOrigen: 'major',
+      cambioTonalidad: { armadura: -1, direccion: 'cercana', modo: 'minor' }
+    });
+    const deDoMayorALaMenor = transponer(parseNota('Do4'), {
+      desde: 'concierto',
+      hasta: 'concierto',
+      armaduraOrigen: 0,
+      modoOrigen: 'major',
+      cambioTonalidad: { armadura: 0, direccion: 'cercana', modo: 'minor' }
+    });
+
+    expect(formatearNota(deSibMayorAReMenor.nota)).toBe('Re5');
+    expect(formatearNota(deDoMayorALaMenor.nota)).toBe('La3');
+  });
+
   it('obra en Fa mayor tocada en Sol mayor por un saxo tenor: escrito en La mayor', () => {
     const opciones = {
       desde: 'concierto' as const,
