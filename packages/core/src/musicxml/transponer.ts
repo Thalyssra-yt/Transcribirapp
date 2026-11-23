@@ -1,4 +1,4 @@
-import { intervaloDesdeTranspose } from '../interval';
+import { intervaloDesdeTranspose } from '../interval.js';
 import {
   buscarInstrumento,
   definirInstrumento,
@@ -6,8 +6,8 @@ import {
   instrumentoPorTranspose,
   type Clave,
   type Instrumento
-} from '../instruments';
-import { formatearNota, nota, parseNota, type Nota, type Paso } from '../pitch';
+} from '../instruments.js';
+import { formatearNota, nota, parseNota, type Nota, type Paso } from '../pitch.js';
 import {
   fijarAtributo,
   fijarTexto,
@@ -18,7 +18,7 @@ import {
   textoDe,
   type MusicXmlDocument,
   type MusicXmlElement
-} from './dom';
+} from './dom.js';
 import {
   normalizarArmadura,
   planificarTransposicion,
@@ -27,7 +27,7 @@ import {
   type CambioTonalidad,
   type DestinoTransposicion,
   type PreferenciaEnarmonia
-} from '../transpose';
+} from '../transpose.js';
 
 const PASOS: readonly Paso[] = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
 const SOSTENIDOS = 'FCGDAEB';
@@ -429,12 +429,38 @@ function escribirClaves(atributos: MusicXmlElement, clave: Clave): void {
   });
 }
 
+function escribirModo(key: MusicXmlElement, modo: 'major' | 'minor' | undefined): void {
+  if (!modo) {
+    return;
+  }
+
+  const actual = primerHijo(key, 'mode');
+  if (actual) {
+    actual.textContent = modo;
+    return;
+  }
+
+  const elemento = key.ownerDocument?.createElement('mode');
+  if (!elemento) {
+    return;
+  }
+
+  elemento.textContent = modo;
+  const fifths = primerHijo(key, 'fifths');
+  if (fifths?.nextSibling) {
+    key.insertBefore(elemento, fifths.nextSibling);
+  } else {
+    key.appendChild(elemento);
+  }
+}
+
 function escribirArmaduras(
   atributos: MusicXmlElement,
   delta: number,
   armaduraOrigen: number,
   preferir: PreferenciaEnarmonia | undefined,
-  forzarCero: boolean
+  forzarCero: boolean,
+  modo: 'major' | 'minor' | undefined
 ): number {
   const keys = hijos(atributos, 'key');
 
@@ -446,6 +472,7 @@ function escribirArmaduras(
     const bruta = forzarCero ? 0 : armaduraOrigen + delta;
     const armadura = normalizarArmadura(bruta, preferir).armadura;
     fijarTexto(key, 'fifths', armadura);
+    escribirModo(key, modo);
     const referencia =
       primerHijo(atributos, 'time') ??
       primerHijo(atributos, 'clef') ??
@@ -464,6 +491,7 @@ function escribirArmaduras(
     const escrita = forzarCero ? 0 : normalizarArmadura(bruta, preferir).armadura;
 
     fijarTexto(key, 'fifths', escrita);
+    escribirModo(key, modo);
 
     // <cancel> indica qué armadura anterior se anula con becuadros: se transpone igual.
     const cancel = primerHijo(key, 'cancel');
@@ -756,7 +784,8 @@ export function transponerPartitura(
             delta,
             armaduraOrigenActual,
             opciones.preferir,
-            destinoSinArmadura || Boolean(conArmadura?.sinArmadura)
+            destinoSinArmadura || Boolean(conArmadura?.sinArmadura),
+            opciones.cambioTonalidad?.modo
           );
           escribirTranspose(elemento, opciones.hasta);
           if (opciones.actualizarClaves !== false && destino) {

@@ -1,5 +1,5 @@
 import { strToU8, unzipSync, zipSync } from 'fflate';
-import { decodeXmlBytes, escaparAtributo, parseXml } from './dom';
+import { decodeXmlBytes, escaparAtributo, parseXml } from './dom.js';
 
 const CONTENEDOR = 'META-INF/container.xml';
 const RUTA_POR_DEFECTO = 'score.musicxml';

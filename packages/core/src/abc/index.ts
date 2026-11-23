@@ -1,5 +1,5 @@
-import { instrumentoPorId } from '../instruments';
-import { parseMusicXml, type MusicXmlDocument } from '../musicxml/dom';
+import { instrumentoPorId } from '../instruments.js';
+import { parseMusicXml, type MusicXmlDocument } from '../musicxml/dom.js';
 
 const QUINTAS_MAYOR: Record<string, number> = {
   C: 0,

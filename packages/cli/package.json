@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "bin": {
-    "partitura": "./src/index.ts"
+    "partitura": "./dist/index.js"
   },
   "scripts": {
     "start": "tsx src/index.ts",

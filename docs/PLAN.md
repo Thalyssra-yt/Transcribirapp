@@ -39,11 +39,14 @@ Reglas: una fase no se empieza hasta cerrar la anterior. Cada fase termina con `
 **Aceptación:** golden files en `test/golden/` generados y regenerados tras corregir claves; `@musico` aprobó la Fase 2 el 2026-11-23 tras revisar claves alternativas, ausencia de `<clef>` y `staff-details`; `@revisor` verificó lint, typecheck, tests y build. La apertura en MuseScore no se ejecutó en este entorno porque MuseScore no está instalado; queda registrada como comprobación manual pendiente.
 
 ## Fase 3 — CLI (`partitura`)
-- [ ] `partitura instrumentos` — lista ids y nombres.
-- [ ] `partitura info archivo` — partes, tonalidad, compás, si está transportada, registro.
-- [ ] `partitura transponer archivo --de <id|concierto> --a <id> [--parte N] [--octava ±N] -o salida.musicxml`.
-- [ ] `partitura rango archivo --instrumento <id>` — notas fuera de registro y octava sugerida.
-- [ ] Salida legible y `--json` para que la use el agente `transcriptor`.
+- [x] `partitura instrumentos` — lista ids y nombres.
+- [x] `partitura info archivo` — partes, tonalidad, compás, si está transportada, registro.
+- [x] `partitura transponer archivo [--de auto|<id>|concierto] --a <id|concierto> [--parte N] [--octava ±N] [--tonalidad <armadura|nombre>] [--direccion cercana|arriba|abajo] [--preferir sostenidos|bemoles] -o salida.musicxml`.
+- [x] `partitura rango archivo --instrumento <id>` — notas fuera de registro y octava sugerida.
+- [x] Salida legible y `--json` para que la use el agente `transcriptor`.
+- [x] `pnpm partitura` desde la raíz, `--help`/`-h` general y por comando, `--version`, búsqueda y filtros de instrumentos, sugerencias de ids y protección de sobrescritura con `--forzar`.
+
+**Aceptación:** los cuatro comandos funcionan con `.musicxml`, `.mxl` y `.abc` de entrada, y escriben `.musicxml` o `.mxl`; 209 tests, lint, typecheck y build en verde. El bin `partitura` también funciona con `node dist/index.js` tras el build, y las rutas relativas se resuelven desde la raíz del proyecto.
 
 ## Fase 4 — Interfaz web (`apps/web`)
 Diseño:

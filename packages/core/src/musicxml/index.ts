@@ -1,3 +1,3 @@
-export * from './dom';
-export * from './mxl';
-export * from './transponer';
+export * from './dom.js';
+export * from './mxl.js';
+export * from './transponer.js';

@@ -1,5 +1,5 @@
-import { type Instrumento } from './instruments';
-import { midi, type Nota } from './pitch';
+import { type Instrumento } from './instruments.js';
+import { midi, type Nota } from './pitch.js';
 
 export type EstadoRango = 'comodo' | 'fuera-comodo' | 'fuera-absoluto';
 

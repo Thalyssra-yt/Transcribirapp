@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "pnpm --filter @transcriptor/web dev",
+    "partitura": "tsx packages/cli/src/index.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",

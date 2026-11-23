@@ -79,7 +79,7 @@ pnpm test           # todos los tests (Vitest)
 pnpm test:e2e       # Playwright
 pnpm lint
 pnpm build
-pnpm --filter cli start -- transponer entrada.musicxml --de concierto --a saxo-tenor -o salida.musicxml
+pnpm partitura transponer entrada.musicxml --a saxo-tenor -o salida.musicxml
 pnpm tauri dev      # escritorio
 ```
 

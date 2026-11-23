@@ -7,7 +7,7 @@ import {
   mod,
   quintas,
   type Nota
-} from './pitch';
+} from './pitch.js';
 
 export interface Intervalo {
   pasos: number;

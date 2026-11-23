@@ -7,8 +7,8 @@ import {
   sumarIntervalos,
   UNISONO,
   type Intervalo
-} from './interval';
-import { instrumentoPorId, type Instrumento, type InstrumentoId } from './instruments';
+} from './interval.js';
+import { instrumentoPorId, type Instrumento, type InstrumentoId } from './instruments.js';
 import {
   deQuintas,
   diatonico,
@@ -19,7 +19,7 @@ import {
   quintasDePaso,
   type Nota,
   type Paso
-} from './pitch';
+} from './pitch.js';
 
 /** Un instrumento del catálogo, uno personalizado (objeto) o el sonido real. */
 export type DestinoTransposicion = InstrumentoId | 'concierto' | Instrumento;
@@ -30,6 +30,8 @@ export interface CambioTonalidad {
   armadura: number;
   /** Hacia dónde mover la música. Por defecto, la tonalidad más cercana. */
   direccion?: DireccionCambio;
+  /** Modo que debe quedar escrito en la partitura, si se conoce. */
+  modo?: 'major' | 'minor';
 }
 export type PreferenciaEnarmonia = 'sostenidos' | 'bemoles';
 

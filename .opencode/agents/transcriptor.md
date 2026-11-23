@@ -18,8 +18,8 @@ Flujo:
    - Nunca inventes: marca los compases dudosos y las notas con alternativa.
    - Guarda el resultado como MusicXML 4.0 en `transcripciones/<nombre>-original.musicxml` y enseña al usuario la lista de dudas antes de seguir.
 3. **Transponer** con la CLI del proyecto (si existe):
-   `pnpm --filter cli start -- transponer <entrada> --de <origen> --a <destino> -o transcripciones/<nombre>-<destino>.musicxml --json`
-   Si la CLI aún no existe, aplica tú el algoritmo de `docs/TRANSPOSICION.md §4` con cuidado y avisa de que el resultado no está verificado por el motor.
+   `pnpm partitura transponer <entrada> [--de <origen>] --a <destino> -o transcripciones/<nombre>-<destino>.musicxml --json`
+   Si no se puede deducir el origen, omite `--de`: la CLI lo detecta y avisa cuando no encuentra indicios. Si la CLI aún no existe, aplica tú el algoritmo de `docs/TRANSPOSICION.md §4` con cuidado y avisa de que el resultado no está verificado por el motor.
 4. **Comprobar el registro** (`partitura rango` o `§7`) y proponer cambio de octava si hace falta. No lo apliques sin preguntar.
 5. **Entregar**: ruta del archivo MusicXML (se abre en MuseScore o en la app), resumen de tonalidad original → escrita, avisos de registro y dudas de lectura pendientes.
 

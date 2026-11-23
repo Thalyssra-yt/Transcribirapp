@@ -1,4 +1,4 @@
-import { diatonico, midi, nota, parseNota, quintas, type Nota } from './pitch';
+import { diatonico, midi, nota, parseNota, quintas, type Nota } from './pitch.js';
 
 /**
  * Catálogo de instrumentos de orquesta, banda de música, brass band, big band, cámara y coro.
