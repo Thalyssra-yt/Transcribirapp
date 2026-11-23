@@ -30,7 +30,6 @@ describe('catálogo completo de orquesta y banda', () => {
     }
 
     const naturales = [
-      'trompa-mib',
       'trompa-do-alto',
       'trompa-sib-alto',
       'trompa-la',
@@ -40,17 +39,18 @@ describe('catálogo completo de orquesta y banda', () => {
       'trompa-re',
       'trompa-do-basso',
       'trompa-sib-basso',
-      'trompeta-re',
-      'trompeta-mib',
       'trompeta-mi',
-      'trompeta-fa',
-      'trompeta-sol',
-      'trompeta-la'
+      'trompeta-fa'
     ] as InstrumentoId[];
 
     for (const id of naturales) expect(instrumentoPorId(id).sinArmadura, id).toBe(true);
     for (const id of [
+      'trompa-mib',
       'trompa-fa',
+      'trompeta-re',
+      'trompeta-mib',
+      'trompeta-sol',
+      'trompeta-la',
       'trompeta-sib',
       'trompeta-do',
       'trompeta-piccolo-sib'
@@ -143,7 +143,7 @@ describe('instrumentos personalizados', () => {
         familia: 'metal',
         agrupaciones: ['historico'],
         suena: 'Si2',
-        clave: 'sol+fa',
+        clave: 'sol-o-fa',
         rango: ['Do4', 'Sol5', 'Do3', 'Do6'],
         sinArmadura: true
       })

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<score-partwise version="4.0">
+  <work><work-title>Ópera ñ</work-title></work>
+  <part-list><score-part id="P1"><part-name>Saxo tenor en Sib</part-name><part-abbreviation>Sx. t.</part-abbreviation></score-part></part-list>
+  <part id="P1"><measure number="1"><attributes><divisions>1</divisions><key><fifths>0</fifths></key><clef><sign>G</sign><line>2</line></clef></attributes><note><pitch><step>C</step><alter>0</alter><octave>4</octave></pitch><duration>1</duration><type>quarter</type></note></measure></part>
+</score-partwise>

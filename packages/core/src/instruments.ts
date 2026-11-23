@@ -11,7 +11,8 @@ import { diatonico, midi, nota, parseNota, quintas, type Nota } from './pitch';
  * flautín lee Do4 y suena Do5. Ver docs/TRANSPOSICION.md §2.
  */
 
-export type Clave = 'sol' | 'fa' | 'do3' | 'do4' | 'sol8' | 'sol+fa' | 'fa-do4-sol' | 'percusion';
+export type Clave =
+  'sol' | 'fa' | 'do3' | 'do4' | 'sol8' | 'sol+fa' | 'sol-o-fa' | 'fa-o-do4-o-sol' | 'percusion';
 
 export type Familia =
   'madera' | 'metal' | 'cuerda' | 'cuerda-pulsada' | 'percusion-afinada' | 'teclado' | 'voz';
@@ -155,7 +156,7 @@ export const INSTRUMENTOS = [
   d({ id: 'oboe', nombre: 'Oboe', abreviatura: 'Ob.', familia: 'madera', agrupaciones: ['orquesta', 'banda', 'camara'], suena: 'Do4', clave: 'sol', rango: ['Do4', 'Mi6', 'Sib3', 'La6'] }),
   d({ id: 'oboe-amor', nombre: "Oboe d'amore en La", abreviatura: 'Ob. am.', familia: 'madera', agrupaciones: ['orquesta', 'historico'], suena: 'La3', clave: 'sol', rango: ['Do4', 'Re6', 'Si3', 'Sol6'] }),
   d({ id: 'corno-ingles', nombre: 'Corno inglés en Fa', abreviatura: 'C. ing.', familia: 'madera', agrupaciones: ORQ_BANDA, suena: 'Fa3', clave: 'sol', rango: ['Do4', 'Re6', 'Si3', 'Sol6'], alias: ['Cor anglais', 'English horn'] }),
-  d({ id: 'fagot', nombre: 'Fagot', abreviatura: 'Fg.', familia: 'madera', agrupaciones: ['orquesta', 'banda', 'camara'], suena: 'Do4', clave: 'fa-do4-sol', rango: ['Do2', 'Sol4', 'Sib1', 'Mi5'], alias: ['Bassoon'] }),
+  d({ id: 'fagot', nombre: 'Fagot', abreviatura: 'Fg.', familia: 'madera', agrupaciones: ['orquesta', 'banda', 'camara'], suena: 'Do4', clave: 'fa-o-do4-o-sol', rango: ['Do2', 'Sol4', 'Sib1', 'Mi5'], alias: ['Bassoon'] }),
   d({ id: 'contrafagot', nombre: 'Contrafagot', abreviatura: 'Cfg.', familia: 'madera', agrupaciones: ORQ_BANDA, suena: 'Do3', clave: 'fa', rango: ['Do2', 'Fa4', 'Sib1', 'Sib4'] }),
   d({ id: 'clarinete-mib', nombre: 'Requinto (clarinete en Mib)', abreviatura: 'Req.', familia: 'madera', agrupaciones: ORQ_BANDA, suena: 'Mib4', clave: 'sol', rango: ['Mi3', 'Re6', 'Mi3', 'Sol6'], alias: ['Requinto', 'Clarinete piccolo'] }),
   d({ id: 'clarinete-do', nombre: 'Clarinete en Do', abreviatura: 'Cl. Do', familia: 'madera', agrupaciones: ['orquesta', 'historico'], suena: 'Do4', clave: 'sol', rango: ['Mi3', 'Sol6', 'Mi3', 'Do7'] }),
@@ -175,30 +176,30 @@ export const INSTRUMENTOS = [
   // ───────────── Viento metal ─────────────
   d({ id: 'trompeta-sib', nombre: 'Trompeta en Sib', abreviatura: 'Tpt.', familia: 'metal', agrupaciones: ['orquesta', 'banda', 'big-band', 'brass-band', 'moderna'], suena: 'Sib3', clave: 'sol', rango: ['Do4', 'Sol5', 'Fa#3', 'Do6'] }),
   d({ id: 'trompeta-do', nombre: 'Trompeta en Do', abreviatura: 'Tpt. Do', familia: 'metal', agrupaciones: ['orquesta'], suena: 'Do4', clave: 'sol', rango: ['Do4', 'Sol5', 'Fa#3', 'Do6'] }),
-  d({ id: 'trompeta-re', nombre: 'Trompeta en Re', abreviatura: 'Tpt. Re', familia: 'metal', agrupaciones: ['orquesta', 'historico'], suena: 'Re4', clave: 'sol', rango: ['Do4', 'Fa#5', 'Fa#3', 'La5'], sinArmadura: true }),
-  d({ id: 'trompeta-mib', nombre: 'Trompeta en Mib', abreviatura: 'Tpt. Mib', familia: 'metal', agrupaciones: ['orquesta', 'historico'], suena: 'Mib4', clave: 'sol', rango: ['Do4', 'Mi5', 'Fa#3', 'Sol5'], sinArmadura: true }),
+  d({ id: 'trompeta-re', nombre: 'Trompeta en Re', abreviatura: 'Tpt. Re', familia: 'metal', agrupaciones: ['orquesta', 'historico'], suena: 'Re4', clave: 'sol', rango: ['Do4', 'Fa#5', 'Fa#3', 'La5'] }),
+  d({ id: 'trompeta-mib', nombre: 'Trompeta en Mib', abreviatura: 'Tpt. Mib', familia: 'metal', agrupaciones: ['orquesta', 'historico'], suena: 'Mib4', clave: 'sol', rango: ['Do4', 'Mi5', 'Fa#3', 'Sol5'] }),
   d({ id: 'trompeta-mi', nombre: 'Trompeta en Mi', abreviatura: 'Tpt. Mi', familia: 'metal', agrupaciones: ['orquesta', 'historico'], suena: 'Mi4', clave: 'sol', rango: ['Do4', 'Mi5', 'Fa#3', 'Sol5'], sinArmadura: true }),
   d({ id: 'trompeta-fa', nombre: 'Trompeta en Fa', abreviatura: 'Tpt. Fa', familia: 'metal', agrupaciones: ['orquesta', 'historico'], suena: 'Fa4', clave: 'sol', rango: ['Do4', 'Re5', 'Fa#3', 'Fa5'], sinArmadura: true }),
-  d({ id: 'trompeta-sol', nombre: 'Trompeta en Sol', abreviatura: 'Tpt. Sol', familia: 'metal', agrupaciones: ['orquesta', 'historico'], suena: 'Sol4', clave: 'sol', rango: ['Do4', 'Do5', 'Fa#3', 'Mi5'], sinArmadura: true }),
-  d({ id: 'trompeta-la', nombre: 'Trompeta en La', abreviatura: 'Tpt. La', familia: 'metal', agrupaciones: ['orquesta', 'historico'], suena: 'La3', clave: 'sol', rango: ['Do4', 'Sol5', 'Fa#3', 'Do6'], sinArmadura: true }),
+  d({ id: 'trompeta-sol', nombre: 'Trompeta en Sol', abreviatura: 'Tpt. Sol', familia: 'metal', agrupaciones: ['orquesta', 'historico'], suena: 'Sol4', clave: 'sol', rango: ['Do4', 'Do5', 'Fa#3', 'Mi5'] }),
+  d({ id: 'trompeta-la', nombre: 'Trompeta en La', abreviatura: 'Tpt. La', familia: 'metal', agrupaciones: ['orquesta', 'historico'], suena: 'La3', clave: 'sol', rango: ['Do4', 'Sol5', 'Fa#3', 'Do6'] }),
   d({ id: 'trompeta-piccolo-sib', nombre: 'Trompeta piccolo en Sib', abreviatura: 'Tpt. picc.', familia: 'metal', agrupaciones: ['orquesta'], suena: 'Sib4', clave: 'sol', rango: ['Do4', 'Sol5', 'Fa#3', 'Do6'] }),
   d({ id: 'trompeta-piccolo-la', nombre: 'Trompeta piccolo en La', abreviatura: 'Tpt. picc. La', familia: 'metal', agrupaciones: ['orquesta'], suena: 'La4', clave: 'sol', rango: ['Do4', 'Sol5', 'Fa#3', 'Do6'] }),
   d({ id: 'cornetin-sib', nombre: 'Cornetín en Sib', abreviatura: 'Ctín.', familia: 'metal', agrupaciones: ['orquesta', 'banda', 'brass-band'], suena: 'Sib3', clave: 'sol', rango: ['Do4', 'Sol5', 'Fa#3', 'Do6'], alias: ['Cornet', 'Corneta'] }),
   d({ id: 'cornetin-mib', nombre: 'Cornetín soprano en Mib', abreviatura: 'Ctín. Mib', familia: 'metal', agrupaciones: ['brass-band'], suena: 'Mib4', clave: 'sol', rango: ['Do4', 'Sol5', 'Fa#3', 'Do6'] }),
   d({ id: 'fliscorno', nombre: 'Fliscorno en Sib', abreviatura: 'Flisc.', familia: 'metal', agrupaciones: ['banda', 'brass-band', 'big-band'], suena: 'Sib3', clave: 'sol', rango: ['Do4', 'Fa5', 'Fa#3', 'Do6'], alias: ['Flugelhorn', 'Fliscorno soprano'] }),
-  d({ id: 'trompa-fa', nombre: 'Trompa en Fa', abreviatura: 'Tpa.', familia: 'metal', agrupaciones: ['orquesta', 'banda', 'camara'], suena: 'Fa3', clave: 'sol+fa', rango: ['Do4', 'Sol5', 'Fa#2', 'Do6'], alias: ['Horn', 'Corno'] }),
-  d({ id: 'trompa-mib', nombre: 'Trompa en Mib', abreviatura: 'Tpa. Mib', familia: 'metal', agrupaciones: ['orquesta', 'banda', 'historico'], suena: 'Mib3', clave: 'sol+fa', rango: ['Do4', 'Sol5', 'Fa#2', 'Do6'], sinArmadura: true }),
-  d({ id: 'trompa-do-alto', nombre: 'Trompa en Do alto', abreviatura: 'Tpa. Do a.', familia: 'metal', agrupaciones: ['orquesta', 'historico'], suena: 'Do4', clave: 'sol+fa', rango: ['Do4', 'Sol5', 'Do3', 'Do6'], sinArmadura: true }),
-  d({ id: 'trompa-sib-alto', nombre: 'Trompa en Sib alto', abreviatura: 'Tpa. Sib a.', familia: 'metal', agrupaciones: ['orquesta', 'historico'], suena: 'Sib3', clave: 'sol+fa', rango: ['Do4', 'Sol5', 'Do3', 'Do6'], sinArmadura: true }),
-  d({ id: 'trompa-la', nombre: 'Trompa en La', abreviatura: 'Tpa. La', familia: 'metal', agrupaciones: ['orquesta', 'historico'], suena: 'La3', clave: 'sol+fa', rango: ['Do4', 'Sol5', 'Do3', 'Do6'], sinArmadura: true }),
-  d({ id: 'trompa-lab', nombre: 'Trompa en Lab', abreviatura: 'Tpa. Lab', familia: 'metal', agrupaciones: ['orquesta', 'historico'], suena: 'Lab3', clave: 'sol+fa', rango: ['Do4', 'Sol5', 'Do3', 'Do6'], sinArmadura: true }),
-  d({ id: 'trompa-sol', nombre: 'Trompa en Sol', abreviatura: 'Tpa. Sol', familia: 'metal', agrupaciones: ['orquesta', 'historico'], suena: 'Sol3', clave: 'sol+fa', rango: ['Do4', 'Sol5', 'Do3', 'Do6'], sinArmadura: true }),
-  d({ id: 'trompa-mi', nombre: 'Trompa en Mi', abreviatura: 'Tpa. Mi', familia: 'metal', agrupaciones: ['orquesta', 'historico'], suena: 'Mi3', clave: 'sol+fa', rango: ['Do4', 'Sol5', 'Do3', 'Do6'], sinArmadura: true }),
-  d({ id: 'trompa-re', nombre: 'Trompa en Re', abreviatura: 'Tpa. Re', familia: 'metal', agrupaciones: ['orquesta', 'historico'], suena: 'Re3', clave: 'sol+fa', rango: ['Do4', 'Sol5', 'Do3', 'Do6'], sinArmadura: true }),
-  d({ id: 'trompa-do-basso', nombre: 'Trompa en Do basso', abreviatura: 'Tpa. Do b.', familia: 'metal', agrupaciones: ['orquesta', 'historico'], suena: 'Do3', clave: 'sol+fa', rango: ['Do4', 'Sol5', 'Do3', 'Do6'], sinArmadura: true }),
-  d({ id: 'trompa-sib-basso', nombre: 'Trompa en Sib basso', abreviatura: 'Tpa. Sib b.', familia: 'metal', agrupaciones: ['orquesta', 'historico'], suena: 'Sib2', clave: 'sol+fa', rango: ['Do4', 'Sol5', 'Do3', 'Do6'], sinArmadura: true }),
+  d({ id: 'trompa-fa', nombre: 'Trompa en Fa', abreviatura: 'Tpa.', familia: 'metal', agrupaciones: ['orquesta', 'banda', 'camara'], suena: 'Fa3', clave: 'sol-o-fa', rango: ['Do4', 'Sol5', 'Fa#2', 'Do6'], alias: ['Horn', 'Corno'] }),
+  d({ id: 'trompa-mib', nombre: 'Trompa en Mib', abreviatura: 'Tpa. Mib', familia: 'metal', agrupaciones: ['orquesta', 'banda', 'historico'], suena: 'Mib3', clave: 'sol-o-fa', rango: ['Do4', 'Sol5', 'Fa#2', 'Do6'] }),
+  d({ id: 'trompa-do-alto', nombre: 'Trompa en Do alto', abreviatura: 'Tpa. Do a.', familia: 'metal', agrupaciones: ['orquesta', 'historico'], suena: 'Do4', clave: 'sol-o-fa', rango: ['Do4', 'Sol5', 'Do3', 'Do6'], sinArmadura: true }),
+  d({ id: 'trompa-sib-alto', nombre: 'Trompa en Sib alto', abreviatura: 'Tpa. Sib a.', familia: 'metal', agrupaciones: ['orquesta', 'historico'], suena: 'Sib3', clave: 'sol-o-fa', rango: ['Do4', 'Sol5', 'Do3', 'Do6'], sinArmadura: true }),
+  d({ id: 'trompa-la', nombre: 'Trompa en La', abreviatura: 'Tpa. La', familia: 'metal', agrupaciones: ['orquesta', 'historico'], suena: 'La3', clave: 'sol-o-fa', rango: ['Do4', 'Sol5', 'Do3', 'Do6'], sinArmadura: true }),
+  d({ id: 'trompa-lab', nombre: 'Trompa en Lab', abreviatura: 'Tpa. Lab', familia: 'metal', agrupaciones: ['orquesta', 'historico'], suena: 'Lab3', clave: 'sol-o-fa', rango: ['Do4', 'Sol5', 'Do3', 'Do6'], sinArmadura: true }),
+  d({ id: 'trompa-sol', nombre: 'Trompa en Sol', abreviatura: 'Tpa. Sol', familia: 'metal', agrupaciones: ['orquesta', 'historico'], suena: 'Sol3', clave: 'sol-o-fa', rango: ['Do4', 'Sol5', 'Do3', 'Do6'], sinArmadura: true }),
+  d({ id: 'trompa-mi', nombre: 'Trompa en Mi', abreviatura: 'Tpa. Mi', familia: 'metal', agrupaciones: ['orquesta', 'historico'], suena: 'Mi3', clave: 'sol-o-fa', rango: ['Do4', 'Sol5', 'Do3', 'Do6'], sinArmadura: true }),
+  d({ id: 'trompa-re', nombre: 'Trompa en Re', abreviatura: 'Tpa. Re', familia: 'metal', agrupaciones: ['orquesta', 'historico'], suena: 'Re3', clave: 'sol-o-fa', rango: ['Do4', 'Sol5', 'Do3', 'Do6'], sinArmadura: true }),
+  d({ id: 'trompa-do-basso', nombre: 'Trompa en Do basso', abreviatura: 'Tpa. Do b.', familia: 'metal', agrupaciones: ['orquesta', 'historico'], suena: 'Do3', clave: 'sol-o-fa', rango: ['Do4', 'Sol5', 'Do3', 'Do6'], sinArmadura: true }),
+  d({ id: 'trompa-sib-basso', nombre: 'Trompa en Sib basso', abreviatura: 'Tpa. Sib b.', familia: 'metal', agrupaciones: ['orquesta', 'historico'], suena: 'Sib2', clave: 'sol-o-fa', rango: ['Do4', 'Sol5', 'Do3', 'Do6'], sinArmadura: true }),
   d({ id: 'trompa-tenor-mib', nombre: 'Trompa tenor en Mib (tenor horn)', abreviatura: 'T. hn.', familia: 'metal', agrupaciones: ['brass-band'], suena: 'Mib3', clave: 'sol', rango: ['Do4', 'Sol5', 'Fa#3', 'Do6'], alias: ['Tenor horn', 'Alto horn', 'Saxhorn alto'] }),
-  d({ id: 'trombon', nombre: 'Trombón', abreviatura: 'Tbn.', familia: 'metal', agrupaciones: ['orquesta', 'banda', 'big-band', 'moderna'], suena: 'Do4', clave: 'fa-do4-sol', rango: ['Fa2', 'Sib4', 'Mi2', 'Fa5'] }),
+  d({ id: 'trombon', nombre: 'Trombón', abreviatura: 'Tbn.', familia: 'metal', agrupaciones: ['orquesta', 'banda', 'big-band', 'moderna'], suena: 'Do4', clave: 'fa-o-do4-o-sol', rango: ['Fa2', 'Sib4', 'Mi2', 'Fa5'] }),
   d({ id: 'trombon-bajo', nombre: 'Trombón bajo', abreviatura: 'Tbn. b.', familia: 'metal', agrupaciones: ['orquesta', 'banda', 'big-band'], suena: 'Do4', clave: 'fa', rango: ['Re2', 'Fa4', 'Sib1', 'Sib4'] }),
   d({ id: 'trombon-sib-sol', nombre: 'Trombón en Sib (clave de Sol)', abreviatura: 'Tbn. Sib', familia: 'metal', agrupaciones: ['brass-band', 'banda'], suena: 'Sib2', clave: 'sol', rango: ['Sol3', 'La5', 'Fa#3', 'Do6'] }),
   d({ id: 'bombardino', nombre: 'Bombardino (clave de Fa)', abreviatura: 'Bomb.', familia: 'metal', agrupaciones: ['banda'], suena: 'Do4', clave: 'fa', rango: ['Fa2', 'Fa4', 'Sib1', 'Sib4'], alias: ['Eufonio', 'Euphonium', 'Tuba tenor'] }),
@@ -211,7 +212,7 @@ export const INSTRUMENTOS = [
   // ───────────── Cuerda ─────────────
   d({ id: 'violin', nombre: 'Violín', abreviatura: 'Vl.', familia: 'cuerda', agrupaciones: ['orquesta', 'camara', 'moderna'], suena: 'Do4', clave: 'sol', rango: ['Sol3', 'Re6', 'Sol3', 'Mi7'] }),
   d({ id: 'viola', nombre: 'Viola', abreviatura: 'Vla.', familia: 'cuerda', agrupaciones: ['orquesta', 'camara'], suena: 'Do4', clave: 'do3', rango: ['Do3', 'La5', 'Do3', 'Mi6'] }),
-  d({ id: 'violonchelo', nombre: 'Violonchelo', abreviatura: 'Vc.', familia: 'cuerda', agrupaciones: ['orquesta', 'banda', 'camara'], suena: 'Do4', clave: 'fa-do4-sol', rango: ['Do2', 'La4', 'Do2', 'La5'], alias: ['Chelo', 'Cello'] }),
+  d({ id: 'violonchelo', nombre: 'Violonchelo', abreviatura: 'Vc.', familia: 'cuerda', agrupaciones: ['orquesta', 'banda', 'camara'], suena: 'Do4', clave: 'fa-o-do4-o-sol', rango: ['Do2', 'La4', 'Do2', 'La5'], alias: ['Chelo', 'Cello'] }),
   d({ id: 'contrabajo', nombre: 'Contrabajo', abreviatura: 'Cb.', familia: 'cuerda', agrupaciones: ['orquesta', 'banda', 'big-band', 'camara', 'moderna'], suena: 'Do3', clave: 'fa', rango: ['Mi2', 'Re4', 'Mi2', 'Sol4'] }),
   d({ id: 'arpa', nombre: 'Arpa', abreviatura: 'Arp.', familia: 'cuerda-pulsada', agrupaciones: ['orquesta'], suena: 'Do4', clave: 'sol+fa', rango: ['Do2', 'Do7', 'Dob1', 'Sol#7'] }),
   d({ id: 'guitarra', nombre: 'Guitarra', abreviatura: 'Guit.', familia: 'cuerda-pulsada', agrupaciones: ['moderna', 'big-band', 'camara'], suena: 'Do3', clave: 'sol8', rango: ['Mi3', 'La5', 'Mi3', 'Si5'] }),
@@ -250,6 +251,17 @@ export function instrumentoPorId(id: InstrumentoId | string): Instrumento {
   }
 
   return instrumento;
+}
+
+export function instrumentoPorTranspose(
+  transpose: Instrumento['transpose']
+): Instrumento | undefined {
+  return [...POR_ID.values()].find(
+    (instrumento) =>
+      instrumento.transpose.diatonic === transpose.diatonic &&
+      instrumento.transpose.chromatic === transpose.chromatic &&
+      instrumento.transpose.octaveChange === transpose.octaveChange
+  );
 }
 
 /**

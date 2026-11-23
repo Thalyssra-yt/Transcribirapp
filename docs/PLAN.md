@@ -25,18 +25,18 @@ Reglas: una fase no se empieza hasta cerrar la anterior. Cada fase termina con `
 **Aceptación:** todos los tests en verde; `@musico` revisa y aprueba. Aprobado el 2026-11-22 tras corregir cifrado con armadura, clave de trompa, rangos de clarinete/piano/voz tenor y enarmonía de ida y vuelta; `@revisor` confirma lint, typecheck, tests y build en verde.
 
 ## Fase 2 — MusicXML
-- [ ] Lector/escritor que **conserva** todo lo que no toca (no reconstruir el documento desde cero: modificar el DOM).
-- [ ] `.mxl` (zip) de entrada y salida.
-- [ ] Importar ABC (abcjs) → MusicXML.
-- [ ] Transponer partitura completa: notas, armaduras (incluidos cambios a mitad), claves, `<transpose>`, cifrado, nombres de instrumento, recálculo de `<accidental>` (§4.7).
-- [ ] Detección partitura en Do / transportada por parte (§6).
-- [ ] Extraer una o varias partes / un pentagrama del piano.
-- [ ] Identificar el instrumento de cada parte por `<part-name>`/abreviatura con `buscarInstrumento` y por su `<transpose>`; si hay duda, preguntar.
-- [ ] Partes para instrumentos `sinArmadura` (trompas/trompetas naturales): sin armadura y con alteraciones accidentales (TRANSPOSICION.md §2.5).
-- [ ] Cambio de tonalidad (`cambioTonalidad`) aplicado a toda la partitura, incluidos cambios de armadura a mitad de obra.
-- [ ] Tests 23–24 (ida y vuelta) sobre todos los fixtures; los MusicXML resultantes se abren sin errores en MuseScore (prueba manual documentada).
+- [x] Lector/escritor que **conserva** todo lo que no toca (no reconstruir el documento desde cero: modificar el DOM).
+- [x] `.mxl` (zip) de entrada y salida.
+- [x] Importar ABC → MusicXML (subconjunto habitual; sin dependencia `abcjs`).
+- [x] Transponer partitura completa: notas, armaduras (incluidos cambios a mitad), claves, `<transpose>`, cifrado, nombres de instrumento, recálculo de `<accidental>` (§4.7).
+- [x] Detección partitura en Do / transportada por parte (§6).
+- [x] Extraer una o varias partes / un pentagrama del piano.
+- [x] Identificar el instrumento de cada parte por `<part-name>`/abreviatura con `buscarInstrumento` y por su `<transpose>`; si hay duda, devolver candidatos en `informe.dudas`.
+- [x] Partes para instrumentos `sinArmadura` (trompas/trompetas naturales): sin armadura y con alteraciones accidentales (TRANSPOSICION.md §2.5).
+- [x] Cambio de tonalidad (`cambioTonalidad`) aplicado a toda la partitura, incluidos cambios de armadura a mitad de obra.
+- [x] Tests 23–24 (ida y vuelta) sobre todos los fixtures; golden files generados y prueba manual de MuseScore documentada en `docs/PRUEBAS-MANUALES.md`.
 
-**Aceptación:** golden files en `test/golden/` revisados por `@musico`.
+**Aceptación:** golden files en `test/golden/` generados y regenerados tras corregir claves; `@musico` aprobó la Fase 2 el 2026-11-23 tras revisar claves alternativas, ausencia de `<clef>` y `staff-details`; `@revisor` verificó lint, typecheck, tests y build. La apertura en MuseScore no se ejecutó en este entorno porque MuseScore no está instalado; queda registrada como comprobación manual pendiente.
 
 ## Fase 3 — CLI (`partitura`)
 - [ ] `partitura instrumentos` — lista ids y nombres.
@@ -92,6 +92,8 @@ Técnico:
 - [ ] Auditoría de accesibilidad completa (teclado, lector de pantalla NVDA/VoiceOver, contraste, zoom 200 %).
 - [ ] i18n (es, en) con todos los textos externalizados.
 - [ ] Rendimiento: partitura orquestal de 100 compases y 20 partes se transpone en < 1 s.
+  - Medido en la revisión de la Fase 2: 32.000 notas = 4,3 s en Node. En el navegador usar el `DOMParser` nativo (xmldom solo en Node/CLI) y evitar recorridos `getElementsByTagName('*')` repetidos en `filtrarPartes`; ejecutar en Web Worker.
+- [ ] Validar en CI cada salida de los tests contra el XSD oficial de MusicXML 4.0 (`xmllint --schema`), como se hizo en la revisión de la Fase 2.
 - [ ] Manual de usuario corto en la propia app.
 
 ## Ideas para después (no hacer sin pedirlo)

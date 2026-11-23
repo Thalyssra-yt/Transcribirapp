@@ -1,6 +1,7 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { decodeXmlBytes } from '../src/musicxml/dom';
 
 const DIRECTORIO_FIXTURES = join(import.meta.dirname, 'fixtures');
 
@@ -14,7 +15,7 @@ describe('fixtures MusicXML de la Fase 0', () => {
   });
 
   it.each(archivos)('%s es un score-partwise 4.0 completo', (archivo) => {
-    const contenido = readFileSync(join(DIRECTORIO_FIXTURES, archivo), 'utf8');
+    const contenido = decodeXmlBytes(readFileSync(join(DIRECTORIO_FIXTURES, archivo)));
 
     expect(contenido).toContain('<score-partwise version="4.0">');
     expect(contenido).toContain('<part-list>');

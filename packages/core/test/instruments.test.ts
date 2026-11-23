@@ -105,7 +105,7 @@ describe('catálogo de instrumentos', () => {
   });
 
   it('la trompa en Fa usa clave de Sol con Fa en grave', () => {
-    expect(instrumentoPorId('trompa-fa').clave).toBe('sol+fa');
+    expect(instrumentoPorId('trompa-fa').clave).toBe('sol-o-fa');
   });
 
   it('el piano no supera los límites reales del teclado', () => {

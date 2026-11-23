@@ -15,6 +15,10 @@
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
+  "dependencies": {
+    "@xmldom/xmldom": "^0.9.8",
+    "fflate": "^0.8.2"
+  },
   "devDependencies": {
     "fast-check": "^4.11.0",
     "typescript": "^5.9.3"
